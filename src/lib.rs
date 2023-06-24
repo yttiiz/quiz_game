@@ -1,7 +1,6 @@
 pub mod game_object {
     use std::io;
 
-
     #[derive(Debug)]
     pub struct Quiz {
         title: String,
@@ -17,20 +16,20 @@ pub mod game_object {
                 title: String::from(title),
                 questions: [
                     String::from("A - Quelle est la capitale de la Guadeloupe ?
-                    \t1 - Pointe-à-Pitre
-                    \t2 - Basse-Terre
-                    \t3 - Sainte-rose"),
+                    1 - Pointe-à-Pitre
+                    2 - Basse-Terre
+                    3 - Sainte-rose"),
                     String::from("B - Combien il y a t-il d'habitants ?
-                    \t1 - 397 861
-                    \t2 - 412 257
-                    \t3 - 383 559"),
+                    1 - 397 861
+                    2 - 412 257
+                    3 - 383 559"),
                     String::from("C - Le nombre d'habitant est de 236 hab./km2 ?
-                    \t1 - Vrai
-                    \t2 - Faux"),
+                    1 - Vrai
+                    2 - Faux"),
                     String::from("D - De combien d'iles est composé l'archipel ?
-                    \t1 - 7
-                    \t2 - 2
-                    \t3 - 9"),
+                    1 - 7
+                    2 - 2
+                    3 - 9"),
                 ],
                 score: 0,
                 responses: vec![],
@@ -52,7 +51,9 @@ pub mod game_object {
         }
         
         fn calculate_result(&mut self) {
-            for (i, num) in self.responses.iter().enumerate() {
+            for (i, num) in self.responses
+            .iter()
+            .enumerate() {
                 if num == &self.result[i] {
                     self.score += 1;
                 }
@@ -62,33 +63,52 @@ pub mod game_object {
         pub fn start(&mut self) {
             println!("{}", self.title);
 
-            let questions = self.questions.clone();
-
-            for question in questions {
+            for question in self.questions
+            .clone()
+            .iter() {
                 println!("{}", question);
-        
+
                 let mut input = String::new();
-        
                 io::stdin()
                 .read_line(&mut input)
-                .expect("impossible de lire ce que vous avez renseigné.");
-        
+                .expect("impossible de lire ce que vous avez renseigné");
+
                 self.insert_response(input);
             }
 
             self.show_result();
         }
 
-        pub fn show_result(&mut self) {
+        fn show_result(&mut self) {
             let average = self.total() / 2;
             self.calculate_result();
             
-            if usize::from(self.score) > average {
-                println!("\nVotre score est de : {}/{}. Félicitations !!!!\n", self.score, self.total());
-                
-            } else {
-                println!("\nVotre score est de : {}/{}. Vous pouvez mieux faire !!!!\n", self.score, self.total());
-            }
+            match usize::from(self.score) > average {
+                true => if usize::from(self.score) == self.total() {
+                    self.print_result("Félicitations !!!");
+                    
+                } else {
+                    self.print_result("Très bien !!!");
+                    self.show_good_responses();
+                },
+                false => {
+                    self.print_result("Vous pouvez mieux faire !!!");
+                    self.show_good_responses();
+                }  
+            } 
+
+        }
+
+        fn show_good_responses(&self) {
+            println!("Les bonnes réponses étaient :");
+            println!("Question A -> Basse-Terre");
+            println!("Question B -> 397 861");
+            println!("Question C -> Vrai");
+            println!("Question D -> 7");
+        }
+
+        fn print_result(&self, msg: &str) {
+            println!("\nVotre score est de : {}/{}. {}\n", self.score, self.total(), msg);
         }
     }
 }
