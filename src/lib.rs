@@ -37,7 +37,7 @@ pub mod game_object {
             }
         }
         
-        ///Calculates the length of the results.
+        ///Calculates results length.
         fn total(&self) -> usize {
             self.result.len()
         }
