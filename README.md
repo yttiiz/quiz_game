@@ -1,5 +1,11 @@
-# quiz_game
+# Quiz game (my island)
 
-### Connaissez vous la Guadeloupe ?
+### Do you know about Guadeloupe ?
 
-Pour une prise en main du langage Rust, j'ai réalisé un petit quiz très simple sur la Guadeloupe, pays dont je suis originaire.
+This project is an introduction to _Rust_. It's a short quiz about **Guadeloupe** (FWI), land where i come from.
+
+You can test it by running this command :
+
+```sh
+cargo r
+```

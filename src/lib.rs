@@ -6,7 +6,7 @@ pub mod game_object {
         title: String,
         questions: [String; 4],
         score: u8,
-        responses: Vec<u8>,
+        responses: Box<Vec<u8>>,
         result: [u8; 4],
     }
 
@@ -32,7 +32,7 @@ pub mod game_object {
                     3 - 9"),
                 ],
                 score: 0,
-                responses: vec![],
+                responses: Box::new(vec![]),
                 result: [2, 1, 1, 1],
             }
         }
@@ -43,8 +43,7 @@ pub mod game_object {
         }
 
         fn insert_response(&mut self, entry: String) {
-            let parsing_entry = entry.trim().parse::<u8>();
-            match parsing_entry {
+            match entry.trim().parse::<u8>() {
                 Ok(value) => self.responses.push(value),
                 Err(_err) => ()
             }
