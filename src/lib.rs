@@ -1,6 +1,6 @@
 pub mod game_object {
-    use std::io;
     use crate::db_connexion::Questions;
+    use std::io;
 
     #[derive(Debug)]
     pub struct Quiz {
@@ -19,7 +19,7 @@ pub mod game_object {
                 questions: Box::new(vec![]),
             }
         }
-        
+
         pub fn add_question(&mut self, question: Questions) {
             self.questions.push(question);
         }
@@ -29,24 +29,24 @@ pub mod game_object {
             self.questions.len()
         }
 
-
         fn insert_response(&mut self, entry: String) {
             match entry.trim().parse::<u8>() {
                 Ok(value) => self.responses.push(value),
-                Err(_err) => ()
+                Err(_err) => (),
             }
         }
-        
+
         fn calculate_result(&mut self) {
-            for (i, num) in self.responses
-            .iter()
-            .enumerate() {
+            for (i, num) in self.responses.iter().enumerate() {
                 let questions = self.questions[i].clone();
                 let response_expected = questions.correction;
-                let index = questions.question.propositions
+                let index = questions
+                    .question
+                    .propositions
                     .iter()
-                    .position(|r| r == &response_expected).unwrap();
-                
+                    .position(|r| r == &response_expected)
+                    .unwrap();
+
                 if usize::from(num - 1) == index {
                     self.score += 1;
                 }
@@ -56,23 +56,19 @@ pub mod game_object {
         pub fn start(&mut self) {
             println!("{}", self.title);
 
-            for item_question in self.questions
-                .clone()
-                .iter() {
-                    println!("{}", item_question.question.title);
-                    
-                    for (i, proposition) in item_question.question.propositions
-                        .iter()
-                        .enumerate() {
-                            println!("{} - {}", i + 1, proposition);
-                    }
+            for item_question in self.questions.clone().iter() {
+                println!("{}", item_question.question.title);
 
-                    let mut input = String::new();
-                    io::stdin()
+                for (i, proposition) in item_question.question.propositions.iter().enumerate() {
+                    println!("{} - {}", i + 1, proposition);
+                }
+
+                let mut input = String::new();
+                io::stdin()
                     .read_line(&mut input)
                     .expect("impossible de lire ce que vous avez renseigné");
 
-                    self.insert_response(input);
+                self.insert_response(input);
             }
 
             self.show_result();
@@ -81,22 +77,28 @@ pub mod game_object {
         fn show_result(&mut self) {
             let average = self.total() / 2;
             self.calculate_result();
-            
+
             match usize::from(self.score) > average {
-                true => if usize::from(self.score) == self.total() {
-                    self.print_result("Félicitations !!!");
-                    
-                } else {
-                    self.print_result("Très bien !!!");
-                },
+                true => {
+                    if usize::from(self.score) == self.total() {
+                        self.print_result("Félicitations !!!");
+                    } else {
+                        self.print_result("Très bien !!!");
+                    }
+                }
                 false => {
                     self.print_result("Vous pouvez mieux faire !!!");
-                }  
-            } 
+                }
+            }
         }
 
         fn print_result(&self, msg: &str) {
-            println!("\nVotre score est de : {}/{}. {}\n", self.score, self.total(), msg);
+            println!(
+                "\nVotre score est de : {}/{}. {}\n",
+                self.score,
+                self.total(),
+                msg
+            );
         }
     }
 }
@@ -106,7 +108,8 @@ pub mod env_variables {
     use std::env;
 
     fn set_variable(url: &str) -> String {
-        env::var(url).expect(&("You must set the \"".to_owned() + url + &"\" environment variables"))
+        env::var(url)
+            .expect(&("You must set the \"".to_owned() + url + &"\" environment variables"))
     }
 
     pub fn mongo_url() -> String {
@@ -125,13 +128,13 @@ pub mod env_variables {
 }
 
 pub mod db_connexion {
+    use crate::env_variables::mongo_url;
     use mongodb::{
         bson::{doc, oid::ObjectId},
         Client, Cursor,
     };
     use serde::{Deserialize, Serialize};
     use std::error::Error;
-    use crate::env_variables::mongo_url;
 
     #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct Questions {
@@ -158,10 +161,12 @@ pub mod db_connexion {
         }
 
         pub async fn cursor(&self) -> Result<Cursor<Questions>, Box<dyn Error>> {
-            Ok(self.client
+            Ok(self
+                .client
                 .database("quiz")
                 .collection("series_001")
-                .find(doc! { }).await?)
+                .find(doc! {})
+                .await?)
         }
     }
 }
