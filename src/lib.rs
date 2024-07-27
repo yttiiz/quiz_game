@@ -32,7 +32,7 @@ pub mod game_object {
         fn insert_response(&mut self, entry: String) {
             match entry.trim().parse::<u8>() {
                 Ok(value) => self.responses.push(value),
-                Err(_err) => (),
+                Err(_) => self.responses.push(0),
             }
         }
 
@@ -47,7 +47,7 @@ pub mod game_object {
                     .position(|r| r == &response_expected)
                     .unwrap();
 
-                if usize::from(num - 1) == index {
+                if usize::from(*num) == index + 1 {
                     self.score += 1;
                 }
             }
@@ -76,8 +76,8 @@ pub mod game_object {
 
         fn show_result(&mut self) {
             self.calculate_result();
-
             let final_score =  self.score * (20 / self.total() as u8);
+
             match final_score {
                 18..=20 => self.print_result(final_score, "Félicitations"),
                 16..18 => self.print_result(final_score, "Très bien"),
