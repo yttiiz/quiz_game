@@ -56,17 +56,17 @@ pub mod game_object {
         pub fn start(&mut self) {
             println!("{}", self.title);
 
-            for item_question in self.questions.clone().iter() {
-                println!("{}", item_question.question.title);
+            for (index, item) in self.questions.clone().iter().enumerate() {
+                println!("\n{} - {}", index + 1, item.question.title);
 
-                for (i, proposition) in item_question.question.propositions.iter().enumerate() {
-                    println!("{} - {}", i + 1, proposition);
+                for (i, proposition) in item.question.propositions.iter().enumerate() {
+                    println!("\t{} - {}", i + 1, proposition);
                 }
 
                 let mut input = String::new();
                 io::stdin()
                     .read_line(&mut input)
-                    .expect("impossible de lire ce que vous avez renseigné");
+                    .unwrap_or(0);
 
                 self.insert_response(input);
             }
@@ -75,28 +75,25 @@ pub mod game_object {
         }
 
         fn show_result(&mut self) {
-            let average = self.total() / 2;
             self.calculate_result();
 
-            match usize::from(self.score) > average {
-                true => {
-                    if usize::from(self.score) == self.total() {
-                        self.print_result("Félicitations !!!");
-                    } else {
-                        self.print_result("Très bien !!!");
-                    }
-                }
-                false => {
-                    self.print_result("Vous pouvez mieux faire !!!");
-                }
+            let final_score =  self.score * (20 / self.total() as u8);
+            match final_score {
+                18..=20 => self.print_result(final_score, "Félicitations"),
+                16..18 => self.print_result(final_score, "Très bien"),
+                14..16 => self.print_result(final_score, "Bien"),
+                12..14 => self.print_result(final_score, "Assez bien"),
+                10..12 => self.print_result(final_score, "Passable"),
+                8..10 => self.print_result(final_score, "Assez faible"),
+                6..8 => self.print_result(final_score, "Très faible"),
+                _ => self.print_result(final_score, "A revoir")
             }
         }
 
-        fn print_result(&self, msg: &str) {
+        fn print_result(&self, score: u8, msg: &str) {
             println!(
-                "\nVotre score est de : {}/{}. {}\n",
-                self.score,
-                self.total(),
+                "\nVotre score est de : {}/20. {}.\n",
+                score,
                 msg
             );
         }
