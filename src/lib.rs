@@ -137,13 +137,13 @@ pub mod db_connexion {
     pub struct Questions {
         pub _id: ObjectId,
         pub correction: String,
-        pub question: QuestionData,
+        pub question: Box<QuestionData>,
     }
 
     #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct QuestionData {
         pub title: String,
-        pub propositions: Vec<String>,
+        pub propositions: Box<Vec<String>>,
     }
 
     pub struct Mongo {
