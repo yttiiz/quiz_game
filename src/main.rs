@@ -1,6 +1,6 @@
 use futures::TryStreamExt;
 use quiz::{
-    db_connexion::Mongo,
+    utils::connexion::Mongo,
     game_object::Quiz
 };
 use std::error::Error;
